@@ -58,7 +58,9 @@ userSchema.pre('save', async function () {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-  if (this.isModified('serverSeed')) {
+  // isNew covers first time creation
+  // isModified covers seed rotation later
+  if (this.isNew || this.isModified('serverSeed')) {
     this.serverSeedHash = crypto
       .createHash('sha256')
       .update(this.serverSeed)

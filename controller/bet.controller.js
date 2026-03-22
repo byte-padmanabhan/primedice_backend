@@ -141,3 +141,33 @@ export const getBetHistory = asyncHandler(async (req, res) => {
 
   return res.json(new ApiResponse(200, bets, 'Bet history fetched'));
 });
+
+
+
+export const rotateSeed = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user.id);
+  if (!user) throw new ApiError(404, 'User not found');
+
+  // save old seed before overwriting — user needs this to verify past bets
+  const revealedServerSeed = user.serverSeed;
+
+  // generate new server seed
+  const newServerSeed = crypto.randomBytes(32).toString('hex');
+  const newServerSeedHash = crypto
+    .createHash('sha256')
+    .update(newServerSeed)
+    .digest('hex');
+
+  // update user — reset nonce to 0 for new seed pair
+  user.serverSeed = newServerSeed;
+  user.serverSeedHash = newServerSeedHash;
+  user.nonce = 0;
+  await user.save({ validateBeforeSave: false });
+
+  return res.json(new ApiResponse(200, {
+    revealedServerSeed,      // old seed — user can now verify all past bets
+    newServerSeedHash,       // new hash — committed for future bets
+    clientSeed: user.clientSeed,
+    nonce: 0,
+  }, 'Seed rotated successfully'));
+});
