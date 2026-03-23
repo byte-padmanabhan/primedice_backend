@@ -3,7 +3,7 @@
 // src/middleware/auth.middleware.js
 import jwt from 'jsonwebtoken';
 import ApiError from '../utils/ApiError.js';
-import asyncHandler from '../utils/AsyncHandler.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
 const authenticate = asyncHandler(async (req, res, next) => {
   const authHeader = req.headers.authorization;
