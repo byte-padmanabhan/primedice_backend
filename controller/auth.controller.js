@@ -27,10 +27,10 @@ const issueTokens = async (user) => {
 
 // ── helper — cookie options ──
 const cookieOptions = {
-  httpOnly: true,   // JS cannot read this cookie
-  secure: process.env.NODE_ENV === 'production',  // https only in prod
-  sameSite: 'strict',
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+  httpOnly: true,   
+  secure: true,        
+  sameSite: 'none',   
+  maxAge: 7 * 24 * 60 * 60 * 1000, 
 };
 
 
