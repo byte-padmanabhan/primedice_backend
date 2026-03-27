@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
-
+import { authLimiter, globalLimiter } from './middleware/rateLimiter.middleware.js';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -31,12 +31,12 @@ app.use(cors({
   origin: allowedOrigins,
   credentials: true,
 }));
+app.use(globalLimiter);
 app.use(express.json());
 app.use(cookieParser());
 
 app.get('/', (req, res) => res.send('hello from the server'));
-
-app.use('/api/auth', authRouter);
+app.use('/api/auth', authLimiter, authRouter);
 app.use('/api/bet', betRouter);
 
 app.use(errorMiddleware);
